@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TJ Weldy — terminal</title>
+<meta name="description" content="TJ Weldy — Data Architect / Data Engineer. An interactive terminal résumé & portfolio.">
+<link rel="stylesheet" href="terminal.css">
+</head>
+<body>
+  <a class="back-link" href="index.html" title="Back to standard view">← standard view</a>
+  <div class="crt">
+    <div class="scanlines" aria-hidden="true"></div>
+    <main id="screen" class="screen" aria-live="polite"></main>
+    <form id="prompt-form" class="prompt-line" autocomplete="off">
+      <span class="ps1" id="ps1">visitor@tjweldy:~$</span>
+      <input id="cmd" class="cmd" type="text" autofocus
+             autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
+             aria-label="terminal input">
+    </form>
+  </div>
+  <script src="data.js"></script>
+  <script src="terminal.js"></script>
+</body>
+</html>

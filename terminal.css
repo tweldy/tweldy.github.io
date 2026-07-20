@@ -1,0 +1,80 @@
+:root{
+  --green:#33ff77;         /* phosphor green */
+  --green-dim:#1f9e4a;
+  --green-bright:#b6ffcf;
+  --amber:#ffd24a;
+  --bg:#020604;
+  --link:#57d0ff;
+  --font: "SFMono-Regular", "JetBrains Mono", "Menlo", "Consolas", "Liberation Mono", monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;background:#000;}
+body{
+  font-family:var(--font); color:var(--green);
+  display:flex; height:100vh; overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* the CRT enclosure */
+.crt{
+  position:relative; flex:1; margin:0 auto; width:100%; max-width:1000px;
+  padding:28px 26px 20px; display:flex; flex-direction:column;
+  background:radial-gradient(120% 120% at 50% 0%, #04140c 0%, var(--bg) 70%, #000 100%);
+  box-shadow: inset 0 0 120px rgba(0,0,0,.9), inset 0 0 40px rgba(51,255,119,.06);
+  text-shadow: 0 0 5px rgba(51,255,119,.45);
+  overflow:hidden;
+}
+/* subtle scanlines + flicker, kept tasteful */
+.scanlines{
+  position:absolute; inset:0; pointer-events:none; z-index:5; opacity:.5;
+  background:repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px);
+  animation:flicker 5s infinite steps(60);
+}
+@keyframes flicker{ 0%,97%{opacity:.5} 98%{opacity:.35} 99%{opacity:.6} 100%{opacity:.5} }
+@media (prefers-reduced-motion: reduce){ .scanlines{animation:none} }
+
+.screen{
+  flex:1; overflow-y:auto; padding-right:6px; line-height:1.5; font-size:15px;
+  white-space:pre-wrap; word-break:break-word; z-index:6;
+}
+.screen::-webkit-scrollbar{width:8px}
+.screen::-webkit-scrollbar-thumb{background:var(--green-dim); border-radius:8px}
+
+/* output helpers */
+.line{margin:0}
+.dim{color:var(--green-dim)}
+.bright{color:var(--green-bright)}
+.amber{color:var(--amber)}
+.err{color:#ff6b6b; text-shadow:0 0 5px rgba(255,80,80,.5)}
+.head{color:var(--green-bright); font-weight:700; letter-spacing:.5px}
+.rule{color:var(--green-dim)}
+.kbd{color:#000; background:var(--green); padding:0 6px; border-radius:3px}
+a{color:var(--link); text-decoration:none; text-shadow:0 0 6px rgba(87,208,255,.5)}
+a:hover{text-decoration:underline}
+.ascii{color:var(--green-bright); line-height:1.05; font-size:13px}
+.two-col{display:grid; grid-template-columns:14ch 1fr; gap:2px 14px}
+.tag{color:var(--green-dim)}
+
+/* prompt line */
+.prompt-line{display:flex; align-items:center; gap:10px; z-index:6; padding-top:6px}
+.ps1{color:var(--green-bright); white-space:nowrap}
+.cmd{
+  flex:1; background:transparent; border:0; outline:0;
+  color:var(--green); font:inherit; text-shadow:inherit; caret-color:var(--green);
+}
+/* fake blinking block cursor rendered after the input via JS-less trick */
+.prompt-line::after{
+  content:"▊"; color:var(--green); animation:blink 1.1s steps(1) infinite; margin-left:-8px;
+}
+@keyframes blink{50%{opacity:0}}
+
+.input-echo .ps1{color:var(--green-dim)}
+
+/* back to standard (professional) view */
+.back-link{
+  position:fixed; top:14px; left:16px; z-index:20;
+  font-family:var(--font); font-size:13px; color:var(--green);
+  text-decoration:none; padding:5px 11px; border:1px solid var(--green-dim);
+  border-radius:6px; background:rgba(2,6,4,.6);
+}
+.back-link:hover{background:rgba(51,255,119,.12); box-shadow:0 0 14px rgba(51,255,119,.2);}
