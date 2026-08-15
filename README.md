@@ -1,16 +1,48 @@
-# React + Vite
+# tjweldy.github.io
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal site for **TJ Weldy** — Data Architect / Data Engineer.
 
-Currently, two official plugins are available:
+Two ways to read the same content:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Landing page** (`index.html`) — a conventional professional page, for
+  recruiters and anyone who wants the summary fast.
+- **Terminal mode** (`terminal.html`) — the same material behind a command
+  prompt, for people who'd rather poke around than scroll.
 
-## React Compiler
+## Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Deliberately dependency-free: plain HTML, CSS, and vanilla JS, no build step and
+nothing to install. Open `index.html` in a browser and it works.
 
-## Expanding the ESLint configuration
+`data.js` is the **single source of truth**. Both renderers read from the same
+`DATA` object, so content is written once:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+data.js ──┬──> site.js     ──> index.html     (landing page)
+          └──> terminal.js ──> terminal.html  (terminal mode)
+```
+
+Edit `data.js` and both views update. Don't hardcode content into either
+renderer — that's the one rule that keeps the two from drifting apart.
+
+## Layout
+
+| File | Purpose |
+| --- | --- |
+| `data.js` | All content. The only file most edits touch. |
+| `index.html` / `site.js` / `styles.css` | Landing page |
+| `terminal.html` / `terminal.js` / `terminal.css` | Terminal mode |
+
+## Local preview
+
+No build step. Either open the files directly, or serve them:
+
+```sh
+python3 -m http.server 8000
+# then visit http://localhost:8000
+```
+
+## Deploying
+
+Pushing to `main` publishes via GitHub Pages at
+[tjweldy.github.io](https://tjweldy.github.io).

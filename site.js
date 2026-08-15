@@ -107,6 +107,25 @@
     ex.appendChild(wrap);
   });
 
+  // --- education ---
+  // Terminal mode has always listed this; the landing page never did, which
+  // hid the credential recruiters screen hardest on. Same `detail` key the
+  // terminal reads, so both stay in sync from the one DATA object.
+  const edu = $("education-list");
+  if (edu) {
+    (D.education || []).forEach((e) => {
+      const wrap = el("div", "exp");
+      const head = el("div", "e-head");
+      const left = el("div");
+      left.appendChild(el("h3", null, mark(e.detail || "")));
+      if (e.school) left.appendChild(el("span", "e-co", " · " + esc(e.school)));
+      head.appendChild(left);
+      head.appendChild(el("span", "e-dates", mark(e.dates || "")));
+      wrap.appendChild(head);
+      edu.appendChild(wrap);
+    });
+  }
+
   // --- footer ---
   $("footer-contact").innerHTML =
     `${esc(D.name)} · <a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` +
