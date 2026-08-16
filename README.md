@@ -1,4 +1,4 @@
-# tjweldy.github.io
+# tweldy.github.io
 
 Personal site for **TJ Weldy** — Data Architect / Data Engineer.
 
@@ -45,4 +45,14 @@ python3 -m http.server 8000
 ## Deploying
 
 Pushing to `main` publishes via GitHub Pages at
-[tjweldy.github.io](https://tjweldy.github.io).
+[tweldy.github.io](https://tweldy.github.io).
+
+`.github/workflows/deploy.yml` uploads the repository root as-is — there is no
+build stage, because there is nothing to build. `.nojekyll` stops Pages running
+the files through Jekyll on the way out.
+
+One-time setup on a fresh clone of this repo: **Settings → Pages → Source →
+GitHub Actions**. Without that, the workflow runs green and publishes nothing.
+
+The repo name must match the account name exactly (`tweldy` → `tweldy.github.io`)
+for Pages to serve it at the root rather than as a project subpath.
