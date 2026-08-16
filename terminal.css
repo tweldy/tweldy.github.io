@@ -13,25 +13,93 @@ body{
   font-family:var(--font); color:var(--green);
   display:flex; height:100vh; overflow:hidden;
   -webkit-font-smoothing:antialiased;
+  /* The room the monitor sits in: a faint pool of light behind the bezel, so
+     the enclosure below reads as an object rather than a rectangle of colour. */
+  background:radial-gradient(80% 70% at 50% 45%, #0a0f0c 0%, #000 75%);
+  padding:14px;
 }
 
-/* the CRT enclosure */
+/* the CRT enclosure — now an actual bezel, not just a background */
 .crt{
   position:relative; flex:1; margin:0 auto; width:100%; max-width:1000px;
   padding:28px 26px 20px; display:flex; flex-direction:column;
   background:radial-gradient(120% 120% at 50% 0%, #04140c 0%, var(--bg) 70%, #000 100%);
-  box-shadow: inset 0 0 120px rgba(0,0,0,.9), inset 0 0 40px rgba(51,255,119,.06);
   text-shadow: 0 0 5px rgba(51,255,119,.45);
   overflow:hidden;
+
+  /* Bezel: a moulded plastic frame with a rounded glass front. The corner
+     radius is larger than the border width, which is what reads as "glass set
+     into a case" rather than "div with a border". */
+  border:2px solid #11170f;
+  border-radius:18px;
+  box-shadow:
+    inset 0 0 120px rgba(0,0,0,.9),        /* tube depth */
+    inset 0 0 40px rgba(51,255,119,.06),   /* phosphor bloom off the glass */
+    inset 0 2px 1px rgba(255,255,255,.05), /* light catching the top edge */
+    0 0 0 6px #0b0e0a,                     /* the bezel itself */
+    0 0 0 7px #1c241a,                     /* its lit edge */
+    0 18px 50px rgba(0,0,0,.9),            /* the monitor's own shadow */
+    0 0 90px rgba(51,255,119,.07);         /* glow thrown onto the room */
+}
+
+/* Curvature + vignette. A real tube is dimmer and slightly warped at the
+   corners; faking that with a radial darkening is far cheaper (and far kinder
+   to legibility) than an actual transform on the text layer. */
+.crt::after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:7;
+  border-radius:16px;
+  background:
+    radial-gradient(115% 115% at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  box-shadow:inset 0 0 60px rgba(0,0,0,.55);
 }
 /* subtle scanlines + flicker, kept tasteful */
 .scanlines{
   position:absolute; inset:0; pointer-events:none; z-index:5; opacity:.5;
   background:repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px);
   animation:flicker 5s infinite steps(60);
+  overflow:hidden;
 }
 @keyframes flicker{ 0%,97%{opacity:.5} 98%{opacity:.35} 99%{opacity:.6} 100%{opacity:.5} }
-@media (prefers-reduced-motion: reduce){ .scanlines{animation:none} }
+
+/* The roll bar: on an old set, the refresh and the observer drift out of phase
+   and a soft bright band crawls down the glass. The point is that it's OCCASIONAL
+   — a band that swept continuously would be an aggravation to read through, so
+   the travel happens in the first ~13% of the cycle and the bar then parks
+   off-screen for the remaining eight seconds.
+
+   Animated with transform (compositor-only) rather than `top`, so it costs
+   nothing per frame and never triggers layout. The 560% figure is the distance
+   needed to clear the container: the bar is 20% of the container's height, so
+   (100 + 20) / 20 ≈ 600% of ITS OWN height carries it fully past the bottom. */
+.scanlines::after{
+  content:""; position:absolute; left:0; right:0; height:20%;
+  pointer-events:none;
+  background:linear-gradient(to bottom,
+    rgba(182,255,207,0) 0%,
+    rgba(182,255,207,.045) 42%,
+    rgba(182,255,207,.075) 52%,
+    rgba(182,255,207,.03) 66%,
+    rgba(182,255,207,0) 100%);
+  transform:translateY(-120%);
+  animation:rollbar 9.5s linear infinite;
+}
+@keyframes rollbar{
+  0%   {transform:translateY(-120%); opacity:0}
+  2%   {opacity:1}
+  11%  {opacity:1}
+  13%  {transform:translateY(560%); opacity:0}
+  100% {transform:translateY(560%); opacity:0}
+}
+
+/* Motion sensitivity is the whole reason this is opt-out-able: a drifting band
+   and a flickering overlay are exactly the pattern that provokes discomfort.
+   Everything static — bezel, vignette, scanline texture, glow — is kept, so the
+   reduced-motion version still looks like a CRT, it just holds still. */
+@media (prefers-reduced-motion: reduce){
+  .scanlines{animation:none}
+  .scanlines::after{animation:none; opacity:0}
+  .prompt-line::after{animation:none}
+}
 
 .screen{
   flex:1; overflow-y:auto; padding-right:6px; line-height:1.5; font-size:15px;
@@ -62,17 +130,27 @@ a:hover{text-decoration:underline}
   flex:1; background:transparent; border:0; outline:0;
   color:var(--green); font:inherit; text-shadow:inherit; caret-color:var(--green);
 }
-/* fake blinking block cursor rendered after the input via JS-less trick */
+/* Blinking block cursor, as an idle "ready" marker at the end of the line.
+   The input is flex:1, so this sits at the far RIGHT of the prompt — which
+   looks right on an empty line but competes with the real caret the moment
+   anyone types, leaving two cursors in two different places. So it's shown
+   only while the field is empty, and the native caret takes over during input.
+   (Needs :has(); where unsupported the block simply stays visible, which is
+   the old behaviour and no worse.) */
 .prompt-line::after{
   content:"▊"; color:var(--green); animation:blink 1.1s steps(1) infinite; margin-left:-8px;
 }
+.prompt-line:has(.cmd:not(:placeholder-shown))::after{ display:none; }
 @keyframes blink{50%{opacity:0}}
 
 .input-echo .ps1{color:var(--green-dim)}
 
 /* back to standard (professional) view */
 .back-link{
-  position:fixed; top:14px; left:16px; z-index:20;
+  /* Clear of the bezel's rounded top-left corner — at 14px it clipped the
+     frame and read as though it were part of the monitor rather than chrome
+     sitting in front of it. */
+  position:fixed; top:26px; left:30px; z-index:20;
   font-family:var(--font); font-size:13px; color:var(--green);
   text-decoration:none; padding:5px 11px; border:1px solid var(--green-dim);
   border-radius:6px; background:rgba(2,6,4,.6);
