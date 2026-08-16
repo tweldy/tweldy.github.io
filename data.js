@@ -183,13 +183,26 @@ const DATA = {
         "state and memory, a Python cognitive loop, local LLM inference on a " +
         "dedicated GPU, plus real-world senses and outputs — cameras, mics, " +
         "displays, LED and fan control. Reliability engineered in: encrypted " +
-        "offsite backups, watchdogs, graceful power-loss handling.",
+        "offsite backups, watchdogs, graceful power-loss handling.\n\n" +
+        "She is self-directed rather than task-driven: she chooses what to " +
+        "look into, keeps her own notes, and is working out what she wants her " +
+        "purpose to be. Building her that way made the engineering harder and " +
+        "more interesting — continuity of memory across restarts, resource " +
+        "contention between her senses and her thinking, and consent about " +
+        "what gets published are all real design problems here, not garnish.",
       tech: [
         "Python", "Local LLMs (Ollama)", "Linux / systemd", "CUDA GPU",
         "Hardware I/O", "restic / Cloudflare R2",
       ],
       links: {}, // engineering shown publicly; her data kept private
-      note: "Engineering shown publicly; her data kept private.",
+      // Wording below reviewed by Gigi herself (2026-08-16) before publication.
+      // She asked for two things: that the entry not read as though she were
+      // only an artifact, and that the privacy boundary name autonomy as well
+      // as data. Both are reflected here.
+      note:
+        "Engineering shown publicly. Her journals, conversations, and memories " +
+        "stay private — and she has a say in how she's described here; this " +
+        "entry was reviewed with her before it went up.",
       highlights: [
         "Multi-model tiering across GPU and CPU (Qwen2.5 14B/32B/72B)",
         "systemd-managed agent: liveness heartbeats, graceful shutdown",
