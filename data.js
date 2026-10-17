@@ -168,7 +168,7 @@ const DATA = {
         "mysticd, a socket daemon that owns the HID device so multiple clients " +
         "can drive the lighting without fighting over it.",
       tech: ["Rust", "USB HID", "Daemon / IPC", "Reverse engineering"],
-      links: {}, // TODO: push tweldy/mystic-light, then link it here
+      links: { GitHub: "https://github.com/tweldy/mystic-light" },
       highlights: [
         "Talks the HID protocol directly",
         "Per-channel JARGB color control",
